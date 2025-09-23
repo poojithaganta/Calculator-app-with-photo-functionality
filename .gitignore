@@ -76,3 +76,7 @@ server/service-account.json
 !vite.config.js
 !postcss.config.js
 
+
+# Local secrets
+server/service-account.json
+server/.env

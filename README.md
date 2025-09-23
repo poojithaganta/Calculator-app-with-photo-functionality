@@ -52,37 +52,63 @@ A modern, feature-rich calculator web application that can read mathematical exp
 - **Service Account** with Vision API permissions
 
 
-### Google Cloud Vision Setup
+## Quick Start (after cloning from GitHub)
 
-#### Enable Vision API
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing one
-3. Enable the **Vision API** in the API Library
-4. Go to **IAM & Admin** → **Service Accounts**
-5. Create a new service account with **Cloud Vision API User** role
-6. Download the JSON key file
+1. Clone and enter the project directory
+   ```bash
+   git clone <your-repo-url>
+   cd Calculator-app-with-photo-functionality
+   ```
 
+2. Install dependencies for both frontend and backend
+   ```bash
+   npm run install:all
+   ```
 
-### Start the Application
+3. Create backend environment file
+   ```bash
+   cp server/env.example server/.env
+   ```
 
-#### Option A: Run Both Services (Recommended)
-```bash
-npm run start
-```
+4. Add Google Cloud Vision credentials
+   - Enable the Vision API and create/download a Service Account JSON key (see setup below)
+   - Save the key as: `server/service-account.json`
+   - Ensure `server/.env` has:
+     ```bash
+     GOOGLE_APPLICATION_CREDENTIALS=./server/service-account.json
+     PORT=8787
+     NODE_ENV=development
+     ```
 
-#### Option B: Run Separately (Two Terminal Windows)
-```bash
-# Terminal 1 - Backend Server
-npm run server
+5. Start the app
+   - Recommended (runs backend and frontend together):
+     ```bash
+     npm start
+     ```
+   - Or run separately in two terminals:
+     ```bash
+     npm run server   # backend at http://localhost:8787
+     npm run dev      # frontend at http://localhost:5173 (may use 5174 if busy)
+     ```
 
-# Terminal 2 - Frontend Dev Server
-npm run dev
-```
+6. Access locally
+   - Frontend: http://localhost:5173 (or the port printed by Vite)
+   - Backend health: http://localhost:8787/api/health
 
-### Access the Application
-- **Frontend**: http://localhost:5173
-- **Backend**: http://localhost:8787
-- **Health Check**: http://localhost:8787/api/health
+7. Verify
+   ```bash
+   curl http://localhost:8787/api/health
+   ```
+   - Open the UI and try the calculator
+   - Use the camera icon to upload an image and test OCR
+
+### Troubleshooting
+- If port 5173 is in use, Vite will automatically use the next available port (e.g., 5174).
+- If OCR fails to initialize, verify the credentials file path and permissions:
+  - `server/service-account.json` exists
+  - `GOOGLE_APPLICATION_CREDENTIALS` points to that file (absolute path is logged on server start)
+- To change backend port, edit `PORT` in `server/.env` and update `vite.config.js` proxy `target` to match.
+
 
 ##  Usage Guide
 
@@ -102,39 +128,4 @@ npm run dev
 - **Formats**: PNG, JPEG, JPG
 - **Size limit**: 5MB maximum (Google Cloud Vision: up to 20MB)
 - **Content**: Clear mathematical expressions
-
-
-##  API Documentation
-
-### Endpoints
-
-#### `GET /api/health`
-Health check endpoint
-```json
-{
-  "status": "ok",
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "vision": "google-cloud"
-}
-```
-
-#### `POST /api/ocr`
-Process image for mathematical expression
-```json
-// Request: multipart/form-data
-{
-  "image": "file"
-}
-
-// Response
-{
-  "success": true,
-  "expression": "2+3*4",
-  "filename": "math.png",
-  "processedAt": "2024-01-01T00:00:00.000Z"
-}
-```
-
----
-
 
